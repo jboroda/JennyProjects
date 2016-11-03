@@ -1,0 +1,40 @@
+public static class DatesAndHolidays{
+private static ICollection<DateTime> _dates;
+private static int Year {get; set;}
+  public static bool IsHoliday(DateTIme date)
+  {
+    FederalHolidays(date.Year);
+    return _dates.Contains(DateTIme.Parse(date.ToShortDateString()));
+  }
+  public static DateTime GetPreviousDate(DateTIme date)
+  {
+    DateTIme previousDate = date>AddDays(-1);
+    switch(previousDate.DayOfWeek)
+    {
+      case DayOfWeek.Sunday:
+        previousDate = date.AddDays(-3);
+        break;
+       case DayOfWeek.Saturday:
+        previousDate = date.AddDays(-3);
+        break;   
+    }
+    return previousDate;
+  }
+  
+  private static void FederalHolidays(int year)
+  {
+    Year = year;
+    _dates = new List<DateTime> 
+    { 
+      GetNewYearsDau(year), 
+      GetMLKDay(year), 
+      GetPresidentsDay(year), 
+      GetMemorialDay(year), 
+      GetJuly4(year), 
+      GetLaborDay(year),
+      GetThanksgiving(year),
+      GetChristmas(year)
+     };
+  }
+  
+}

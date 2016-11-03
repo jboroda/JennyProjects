@@ -36,5 +36,67 @@ private static int Year {get; set;}
       GetChristmas(year)
      };
   }
+  // 3rd Monday in feb
+  private staic DateTIme GetPresidentsDay(int year)
+  {
+    var feb = new DateTIme(year, 02, 01);
+    return Enumerable.Range(0, 28).Select(x=>feb.AddDays(x)).Where(x=>x.DayOfWeek == DayOfWeek.Monday).Skip(2).First();
+  }
+  // 3rd Monday in jan
+  private staic DateTIme GetMLKDay(int year)  
+  {    
+    var jan = new DateTIme(year, 01, 01);    
+    return Enumerable.Range(0, 28).Select(x=>jan.AddDays(x)).Where(x=>x.DayOfWeek == DayOfWeek.Monday).Skip(2).First();  
+  }
+ //last monday in may
+ private static DateTime GetMomrialDay (int year)
+ {
+  var may = new DateTime (year, 05, 01);
+  return Enumberable.Rache(0, 31).Select(x=>may.AddDays(x)).Last(x=>x.DayOfWeek == DayOfWeek.Monday);
+ }
+  // first monday in Sep
+  private static DateTIme GetLaborDay(int year)
+  {
+    var sept = new DateTime(year, 09, 01);
+    return Enumerable.Range(0, 20).Select(x=>sept.AddDays(x)).First(x=>x.DayOfWeek == DayOfWeek.Monday);
+  }
+  // new Years
+  private static DateTime GetNewYearsDay (int year)
+  {
+    var jan1 = new DateTime(year, 1, 1);
+    if(jan1.DayOfWeek == DayOfWeek.Saturday)
+      return jan1.AddDays(2);
+    if(jan1.DayOfWeek == DayOfWeek.Sunday)
+      return jan1.AddDays(1);
+    return jan1;
+  }
   
-}
+  private statuc DateTime GetThanksfiving(int year)
+  {
+    //fourth thursday in novemebr
+    var nov = new DateTime(year, 11, 01);
+    var thur = Enumerable.Range(0, 20).Select(x=>nov.AddDays(x)).Where(x=>x.DayOfWeek == DayOfWeek.Thursday).ToArray();
+    if(thur.Count() > 4)
+      return thur[4];
+    reutrn thur[3];
+  }
+  private static DateTIme GetJuly4 (int year)
+  {
+    var date = new DateTIme(year, 07, 04);
+    if(date.DayOfWeek == DayOfWeek.Saturday)
+      return date.AddDays(-1);
+    if(date.DayOfWeek == DayOfWeek.Sunday)
+      return date.AddDays(1);
+      
+    return date;
+  }
+  private static DateTime GetChristmas(int year)
+  {
+    var date = new DateTIme(year, 12, 25);    
+    if(date.DayOfWeek == DayOfWeek.Saturday)      
+      return date.AddDays(-1);    
+    if(date.DayOfWeek == DayOfWeek.Sunday)      
+      return date.AddDays(1);          
+     return date;
+  }
+} 

@@ -1,0 +1,93 @@
+Config file
+
+<configuration>
+<configSections>
+<section name="log4net" type="log4net.COnfig.Log4NetConfigurationSectionHandler, log4net"/>
+<section name="fileLoadConfig" type="System.Configuration.SingleTagSelectionHandler"/>
+</configSections>
+<fileLoadConfig numCol="15" numTabs="2"/>
+<system.net>
+<mailSettings>
+<smtp from="name@mail.com">
+<network host="smtp.domain.com" port="port" defaultCredentials="true" enableSsl="true" userName="name" />
+</smtp>
+</mailSettings>
+</system.net>
+<system.web>
+...
+<httpRuntime targetFramework="" executionTimeout="1000000" maxRequestLength="214748364"/>
+<authentication mode="Windows" />
+<authorization>
+<deny users="?"/>
+</autorization>
+<log4net>
+<appender name="ColoredConsoleAppender" type="log4net.Appender.ColoredConsoleAppender">
+<mapping>
+<level value="DEBUG" />
+<foreColor value="White" />
+<backColor value="Red, HighIntensity" />
+</mapping>
+<mapping>
+<level value="DEBUG" />
+<backColor value ="Green"/>
+</mapping>
+<layout type="log4net.Layout.PatternLayout">
+<conversionPattern value="%date %-5level [ThredId: %t] %logger - %message%newline%newline"/>
+</layout>
+</appender>
+
+<appender name="RollingLogFileAppender" type="log4net.Appender.RollingFileAppender">
+<immediateFlush value="true" />
+<file value="c:\temp\" />
+<datePattern value="'name_'dd_MM-yyyy'.log'" />
+<appendToFile value="true" />
+<maxSizeRollBackups value"10" />
+<maximumFileSize value="5MB" />
+<rollingStyle="Composite" />
+<staticLogFileName value="false" />
+<layout type="log4net.Layout.PatternLayout" />
+<header value="[AppName]"/>
+<conversionPattern value="[LOG]%date %-5level [ThreadId: %t] %logger - %message%newline%newline[/LOG]" />
+<footer value="[/AppName]" />
+</layout>
+</appender>
+
+<appender name="SmtpAppender" type="log4net.Appender.SmtpAppender">
+<to value="email@mail.com, another@mail.com" />
+<from value"acct@mail.com" />
+<subject value="error" />
+<smtpHost value = "smtp.mail.com" />
+<port value="port" />
+<EnableSsl value="true" />
+<Authentication value="Ntlm" />
+<bufferSize value="1" />
+<lossy value=-"true" />
+<evaluator type="log4net.Core.LevelEvaluator">
+<threshold value"ERROR" />
+</evaluator>
+<layout type="log4net.Layout.PatternLayout">
+<conversionPatterrn value="%date %-5level %logger - %message%newline%newline" />
+</layout>
+</appender>
+<root>
+<level value="DEBUG" />
+<appender-ref ref="RollingLogFileAPpender" />
+<appender-ref ref="ColoredConsoleAppender" />
+<appender-ref ref="SmtpAppender" />
+</root>
+</log4net>
+</system.web>
+</configuration>
+
+cs file
+
+classProgram()
+{
+private static readonly ILog Lof = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMathod().DeclaringType);
+static void Main()
+{
+XmlConfigurator.Configure();
+
+Log.DebugFormatio("FunctionName");
+
+}

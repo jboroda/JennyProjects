@@ -1,0 +1,105 @@
+For this you can use Html.BeginCollectionItem https://www.nuget.org/packages/BeginCollectionItem/
+
+What you can do is have a View for the Main Form and Pass the Parent Model to it as this will represent the Parent, then you will need a row to represent a Child, you can call this ChildRow.cshtml
+
+So for the Parent we are creating Create.cshtml View which we will pass the Parent Model.
+
+@model Parent
+
+@using(Html.BeginForm())
+{
+   @Html.TextBoxFor(m => m.Name)
+
+
+    <table id="children">
+        <tbody>
+
+<!-- This here will display the Child Row for existing Rows in the Parent model -->
+
+            @foreach (var child in Model.Children )
+            {
+                @Html.Partial("ChildRow", child)
+            }
+        </tbody>
+
+    </table>
+<button  type="button" id="addChild">Add Child</button>
+
+<button type="submit"> Save</button>
+    }
+Then this is what the ChildRow.cshtml will look like, It will have a Child model.
+
+Note: you will have to add IsDeleted property to child Model, this will help you in the controller - to see if Child was deleted or Not.
+
+@model Child
+
+@using (Html.BeginCollectionItem("Children"))
+{
+    <tr>
+        <td>
+             @Html.HiddenFor(m => m.IsDeleted, new { data_is_deleted = "false" })
+            @Html.HiddenFor(m => m.ChildId)
+            @Html.TextBoxFor(m => m.Name )
+        </td>
+
+        <td>
+             <span class="glyphicon glyphicon-trash action-icon" data-action="removeItem"></span>
+        </td>
+
+
+    <tr>
+}
+Now you have to add a Row to the end of the Table when the button Add Child is clicked.
+
+For this you will create a new action in the Controller:
+
+    public ActionResult AddChild()
+    {
+        return PartialView("Child", new Child());
+    }
+And then add this jQuery to the Create.cshtml
+
+    $("#addChild").on("click", function () {
+        $.ajax({
+            url: '@Url.Action("AddChild", "YourController")'
+        }).success(function (partialView) {
+            $('#children> tbody:last-child').append(partialView);
+        });
+    });
+this will append a new Child Row to the Table
+
+Also you will have to hide/disable the row if you want to delete on the same page aswell, for that you can add this jQuery:
+
+$('body').on("click", '*[data-action="removeItem"]', function (e) {
+    e.stopPropagation();
+    var btn = $(this);
+    var row = btn.closest('tr');
+    var firstCell = $(row.find('td')[0]);
+    var checkBox = firstCell.find('*[data-is-deleted]');
+    var checkBoxVal = checkBox.val();
+
+    if (checkBoxVal === 'False' || checkBox.val() === 'false') {
+        checkBox.val('true');
+        row.find('td').find('input, textarea, select').attr('readonly', 'readonly');
+    } else {
+        checkBox.val('false');
+        row.find('td').find('input, textarea, select').attr("readonly", false);
+    }
+
+});
+Then when you POST back to the Controller you will see the List of Children in the Model.
+
+[HttpPost]
+public ActionResult Create(Parent model)
+{
+
+   var newChildren = model.Children.Where(s => !s.IsDeleted && s.ChildId == 0);
+
+   var updated = model.Children.Where(s => !s.IsDeleted && s.ChildId != 0);
+
+   var deletedChildren = model.Children.Where(s => s.IsDeleted && s.ChildId != 0);
+
+
+    return View(model);
+}
+You will have to do something similar for the GrandChildren.
